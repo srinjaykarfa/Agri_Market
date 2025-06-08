@@ -124,7 +124,7 @@ function App() {
                 element={<Signup className="animate-fade-in" />}
               />
               <Route
-              path="/forgot-password"
+              path="/forgot"
               element={<Forgot className="animate-fade-in" />}
               />
               <Route
