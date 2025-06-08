@@ -12,7 +12,11 @@ import Cart from "./Pages/cart";
 import Checkout from "./Pages/checkout";
 import Success from "./Pages/success";
 import Payment from "./Pages/payment";
-import AddAddressPage from './Pages/AddAddressPage';
+import AddAddressPage from "./Pages/AddAddressPage";
+import AdminDashboard from "./Pages/AdminDashboard";
+import AdminProducts from "./Pages/AdminProducts";
+import AdminUsers from "./Pages/AdminUsers";
+import AdminAnalytics from "./Pages/AdminAnalytics";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,7 +24,7 @@ function App() {
   const [filters, setFilters] = useState({
     categories: { Fruits: false, Vegetables: false, Grains: false },
     priceRange: [0, 500],
-    sort: ""
+    sort: "",
   });
   const [isBlurred, setIsBlurred] = useState(false); // renamed from isDropdownOpen
 
@@ -87,13 +91,17 @@ function App() {
           setIsBlurred={setIsBlurred}
           className="sticky top-0 z-50 shadow-md"
         />
-        <Sidebar 
-          isOpen={isSidebarOpen} 
+        <Sidebar
+          isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
           className="fixed top-0 left-0 h-full z-40"
         />
         <main className="flex-grow animate-fade-in">
-          <div className={`transition-opacity duration-300 ${isBlurred ? 'opacity-50' : 'opacity-100'}`}>
+          <div
+            className={`transition-opacity duration-300 ${
+              isBlurred ? "opacity-50" : "opacity-100"
+            }`}
+          >
             <Routes>
               <Route
                 path="/"
@@ -106,10 +114,22 @@ function App() {
                   />
                 }
               />
-              <Route path="/login" element={<Login className="animate-fade-in" />} />
-              <Route path="/signup" element={<Signup className="animate-fade-in" />} />
-              <Route path="/soilmonitoringsystem" element={<SoilMonitoringSystem className="animate-fade-in" />} />
-              <Route path="/add-address" element={<AddAddressPage className="animate-fade-in" />} />
+              <Route
+                path="/login"
+                element={<Login className="animate-fade-in" />}
+              />
+              <Route
+                path="/signup"
+                element={<Signup className="animate-fade-in" />}
+              />
+              <Route
+                path="/soilmonitoringsystem"
+                element={<SoilMonitoringSystem className="animate-fade-in" />}
+              />
+              <Route
+                path="/add-address"
+                element={<AddAddressPage className="animate-fade-in" />}
+              />
               <Route
                 path="/cart"
                 element={
@@ -124,10 +144,26 @@ function App() {
               />
               <Route
                 path="/checkout"
-                element={<Checkout cartItems={cartItems} clearCart={clearCart} className="animate-fade-in" />}
+                element={
+                  <Checkout
+                    cartItems={cartItems}
+                    clearCart={clearCart}
+                    className="animate-fade-in"
+                  />
+                }
               />
-              <Route path="/success" element={<Success className="animate-fade-in" />} />
-              <Route path="/payment" element={<Payment className="animate-fade-in" />} />
+              <Route
+                path="/success"
+                element={<Success className="animate-fade-in" />}
+              />
+              <Route
+                path="/payment"
+                element={<Payment className="animate-fade-in" />}
+              />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
             </Routes>
           </div>
         </main>

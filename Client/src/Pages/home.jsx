@@ -122,7 +122,7 @@ const Home = ({ onAddToCart, filters, isBlurred }) => {
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-7">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <div
