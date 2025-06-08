@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+
+const inputVariants = {
+  initial: { opacity: 0, y: 24 },
+  animate: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.09 * i, duration: 0.5, ease: 'easeOut' },
+  }),
+};
+
+const buttonVariants = {
+  hover: { scale: 1.04, boxShadow: '0 6px 28px rgba(34,197,94,0.16)' },
+  tap: { scale: 0.97 },
+};
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -11,163 +25,150 @@ const Login = () => {
     rememberMe: false,
   });
 
+  const [error, setError] = useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login submitted:', formData);
+    // Implement login logic
+    if (!formData.email || !formData.password) {
+      setError('Please enter email and password.');
+      return;
+    }
+    setError('');
+    alert('Login submitted!');
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
+    setError('');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6 sm:space-y-8">
-        {/* Header */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-100 via-green-50 to-lime-200 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_70%,rgba(34,197,94,0.06)_0%,transparent_80%)]"></div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 32 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-xs sm:max-w-sm mx-auto rounded-2xl bg-white/60 shadow-[0_8px_40px_0_rgba(34,197,94,0.12)] px-7 py-8 backdrop-blur-[6px] border border-green-100"
+        style={{ fontSize: '0.96rem' }}
+      >
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center"
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="mb-6 text-center"
         >
-          <h2 className="mt-4 sm:mt-6 text-3xl sm:text-4xl font-extrabold text-green-800 tracking-tight">
-            Welcome Back!
+          <h2 className="text-2xl font-bold text-green-800 tracking-tight mb-1.5">
+            Login
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to access your account
-          </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.22, duration: 0.65 }}
+            className="w-9 mx-auto h-1 rounded bg-gradient-to-r from-green-500 via-emerald-400 to-lime-400 mb-2"
+          />
+          <p className="text-xs text-gray-500">Access your account</p>
         </motion.div>
-
-        {/* Form */}
         <motion.form
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 bg-white p-6 sm:p-8 rounded-2xl shadow-xl"
           onSubmit={handleSubmit}
+          initial="initial"
+          animate="animate"
+          className="space-y-3"
         >
-          {/* Email Field */}
-          <div className="relative group">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors w-4 h-4 sm:w-5 sm:h-5" />
+          {/* Email */}
+          <motion.div custom={0} variants={inputVariants} className="relative group">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="block w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:ring-green-500 focus:border-green-500 transition-all outline-none text-gray-600 placeholder-gray-400 text-sm sm:text-base"
-              placeholder="Enter your email"
+              autoFocus
+              className="block w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Email address"
+              aria-label="Email"
             />
-          </div>
-
-          {/* Password Field */}
-          <div className="relative group">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors w-4 h-4 sm:w-5 sm:h-5" />
+          </motion.div>
+          {/* Password */}
+          <motion.div custom={1} variants={inputVariants} className="relative group">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
-              className="block w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-2.5 sm:py-3 border-2 border-gray-200 rounded-xl focus:ring-green-500 focus:border-green-500 transition-all outline-none text-gray-600 placeholder-gray-400 text-sm sm:text-base"
-              placeholder="Enter your password"
+              className="block w-full pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Password"
+              aria-label="Password"
             />
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              tabIndex={-1}
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-green-500 transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
-              {showPassword ? <EyeOff size={18} className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye size={18} className="w-4 h-4 sm:w-5 sm:h-5" />}
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
-          </div>
-
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
+          </motion.div>
+          {/* Remember Me & Forgot */}
+          <motion.div custom={2} variants={inputVariants} className="flex items-center justify-between pt-1 pb-2">
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer select-none">
               <input
                 type="checkbox"
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded transition-colors"
+                className="accent-green-600 w-3.5 h-3.5"
               />
-              <span className="ml-2 text-xs sm:text-sm text-gray-600">Remember me</span>
+              Remember me
             </label>
-            <a href="#" className="text-xs sm:text-sm font-medium text-green-600 hover:text-green-500 transition-colors">
-              Forgot password?
-            </a>
-          </div>
-
-          {/* Submit Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            className="w-full flex justify-center py-2.5 sm:py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-          >
-            Sign in
-          </motion.button>
-
-          {/* Sign Up Link */}
-          <div className="text-center mt-3 sm:mt-4">
-            <span className="text-xs sm:text-sm text-gray-600">Don't have an account? </span>
-            <Link to="/signup" className="text-xs sm:text-sm font-medium text-green-600 hover:text-green-500 transition-colors">
-              Create one now
+            <Link to="/forgot" className="text-green-600 hover:underline text-xs font-medium">
+              Forgot?
             </Link>
-          </div>
+          </motion.div>
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: 7 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 7 }}
+                className="text-red-600 text-xs text-center mb-1"
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* Login Button */}
+          <motion.button
+            type="submit"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            className="w-full mb-0.5 py-2.5 rounded-xl bg-gradient-to-r from-green-600 via-emerald-600 to-lime-500 text-white font-semibold text-base shadow-lg transition focus:outline-none focus:ring-2 focus:ring-green-200 focus:ring-offset-2"
+            style={{ fontSize: '0.97rem' }}
+          >
+            Login
+          </motion.button>
         </motion.form>
-
-        {/* Social Login Options */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-4 sm:mt-6 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.34, duration: 0.55, ease: 'easeOut' }}
+          className="text-center mt-3"
         >
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-xs sm:text-sm">
-              <span className="px-2 bg-gradient-to-br from-green-50 to-green-100 text-gray-500">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-4 sm:mt-6 grid grid-cols-3 gap-2 sm:gap-3">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="button"
-              className="w-full inline-flex justify-center py-2 px-3 sm:px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              <img className="h-4 w-4 sm:h-5 sm:w-5" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="button"
-              className="w-full inline-flex justify-center py-2 px-3 sm:px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              <img className="h-4 w-4 sm:h-5 sm:w-5" src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook logo" />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              type="button"
-              className="w-full inline-flex justify-center py-2 px-3 sm:px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors"
-            >
-              <img className="h-4 w-4 sm:h-5 sm:w-5" src="https://www.svgrepo.com/show/475661/twitter-color.svg" alt="Twitter logo" />
-            </motion.button>
-          </div>
+          <span className="text-gray-400 text-xs">Don't have an account? </span>
+          <Link to="/signup" className="text-green-700 font-semibold text-xs hover:underline">Sign up</Link>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 };

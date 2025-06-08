@@ -1,168 +1,213 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, Mail, User, Lock } from 'lucide-react';
+
+const inputVariants = {
+  initial: { opacity: 0, y: 24 },
+  animate: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.09 * i, duration: 0.5, ease: 'easeOut' },
+  }),
+};
+
+const buttonVariants = {
+  hover: { scale: 1.04, boxShadow: '0 6px 28px rgba(34,197,94,0.16)' },
+  tap: { scale: 0.97 },
+};
 
 const Signup = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    agreeTerms: false
+    agreeTerms: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: type === 'checkbox' ? checked : value
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
     }));
+    setError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Signup form submitted:', formData);
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+    if (!formData.agreeTerms) {
+      setError('You must agree to the terms and conditions.');
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setError('');
+    alert('Signup successful!');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--background-color)] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl animate-fade-in hover-lift transition-all duration-300">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-[var(--primary-color)] animate-slide-up">
-            Create Your Account
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-100 via-green-50 to-lime-200 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(34,197,94,0.07)_0%,transparent_80%)]"></div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 32 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: 'easeOut' }}
+        className="w-full max-w-xs sm:max-w-sm mx-auto rounded-2xl bg-white/60 shadow-[0_8px_40px_0_rgba(34,197,94,0.12)] px-7 py-8 backdrop-blur-[6px] border border-green-100"
+        style={{ fontSize: '0.96rem' }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="mb-6 text-center"
+        >
+          <h2 className="text-2xl font-bold text-green-800 tracking-tight mb-1.5">
+            Sign Up
           </h2>
-          <p className="mt-2 text-sm text-gray-600 animate-fade-in">
-            Or{' '}
-            <Link to="/login" className="font-medium text-[var(--secondary-color)] hover:text-[var(--accent-color)] transition-colors duration-200">
-              sign in to your existing account
-            </Link>
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div className="animate-slide-up" style={{ animationDelay: '0.1s' }}>
-              <input
-                name="fullName"
-                type="text"
-                autoComplete="name"
-                required
-                placeholder="Full name"
-                className="input-field"
-                value={formData.fullName}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Email address"
-                className="input-field"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="animate-slide-up relative" style={{ animationDelay: '0.3s' }}>
-              <input
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                required
-                placeholder="Password"
-                className="input-field pr-10"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[var(--primary-color)] transition-colors duration-200"
-              >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
-            </div>
-            <div className="animate-slide-up relative" style={{ animationDelay: '0.4s' }}>
-              <input
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                required
-                placeholder="Confirm password"
-                className="input-field pr-10"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[var(--primary-color)] transition-colors duration-200"
-              >
-                {showConfirmPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center animate-fade-in">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.22, duration: 0.65 }}
+            className="w-9 mx-auto h-1 rounded bg-gradient-to-r from-green-500 via-emerald-400 to-lime-400 mb-2"
+          />
+          <p className="text-xs text-gray-500">Create a free account</p>
+        </motion.div>
+        <motion.form
+          onSubmit={handleSubmit}
+          initial="initial"
+          animate="animate"
+          className="space-y-3"
+        >
+          {/* Name */}
+          <motion.div custom={0} variants={inputVariants} className="relative group">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
             <input
-              id="agree-terms"
-              name="agreeTerms"
-              type="checkbox"
-              className="h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-color)] border-gray-300 rounded transition-colors duration-200"
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
               required
+              autoFocus
+              className="block w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Full name"
+              aria-label="Full name"
+            />
+          </motion.div>
+          {/* Email */}
+          <motion.div custom={1} variants={inputVariants} className="relative group">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="block w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Email address"
+              aria-label="Email"
+            />
+          </motion.div>
+          {/* Password */}
+          <motion.div custom={2} variants={inputVariants} className="relative group">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="block w-full pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Password"
+              aria-label="Password"
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-green-500 transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </motion.div>
+          {/* Confirm Password */}
+          <motion.div custom={3} variants={inputVariants} className="relative group">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-green-400 w-4 h-4" />
+            <input
+              type={showConfirmPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              className="block w-full pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-green-400 focus:border-green-400 outline-none text-gray-700 placeholder-gray-400 text-xs bg-white/70 hover:bg-green-50 focus:bg-white transition"
+              placeholder="Confirm password"
+              aria-label="Confirm password"
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowConfirmPassword((v) => !v)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-green-500 transition-colors"
+              aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+            >
+              {showConfirmPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+            </button>
+          </motion.div>
+          {/* Terms */}
+          <motion.div custom={4} variants={inputVariants} className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+            <input
+              type="checkbox"
+              name="agreeTerms"
               checked={formData.agreeTerms}
               onChange={handleChange}
+              className="accent-green-600 w-3.5 h-3.5"
             />
-            <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-700">
-              I agree to the{' '}
-              <a href="#" className="text-[var(--secondary-color)] hover:text-[var(--accent-color)] transition-colors duration-200">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-[var(--secondary-color)] hover:text-[var(--accent-color)] transition-colors duration-200">
-                Privacy Policy
-              </a>
-            </label>
-          </div>
-
-          <div className="animate-fade-in" style={{ animationDelay: '0.5s' }}>
-            <button
-              type="submit"
-              className="btn-primary w-full flex justify-center py-3 px-4 text-base font-medium rounded-lg hover:scale-105 transition-transform duration-200"
-            >
-              Create Account
-            </button>
-          </div>
-        </form>
-      </div>
+            <span>
+              I agree to the
+              <a href="/terms" className="text-green-700 font-semibold hover:underline ml-1" target="_blank" rel="noopener noreferrer">terms & conditions</a>
+            </span>
+          </motion.div>
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: 7 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 7 }}
+                className="text-red-600 text-xs text-center mb-1"
+              >
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* Signup Button */}
+          <motion.button
+            type="submit"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-green-600 via-emerald-600 to-lime-500 text-white font-semibold text-base shadow-lg transition focus:outline-none focus:ring-2 focus:ring-green-200 focus:ring-offset-2"
+            style={{ fontSize: '0.97rem' }}
+          >
+            Sign Up
+          </motion.button>
+        </motion.form>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.34, duration: 0.55, ease: 'easeOut' }}
+          className="text-center mt-3"
+        >
+          <span className="text-gray-400 text-xs">Already have an account? </span>
+          <Link to="/login" className="text-green-700 font-semibold text-xs hover:underline">Login</Link>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

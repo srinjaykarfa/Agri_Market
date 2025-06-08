@@ -151,16 +151,7 @@ const Home = ({ onAddToCart, filters, isBlurred }) => {
         </div>
 
         {/* CTA */}
-        <div className={`text-center mt-6 sm:mt-10 transition-all duration-500 transform ${
-          animate ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-        }`} style={{ transitionDelay: '400ms' }}>
-          <a
-            href="/signup"
-            className="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-white text-green-600 font-medium rounded-md shadow-md hover:bg-gray-100 transition text-sm sm:text-base"
-          >
-            Get Started
-          </a>
-        </div>
+        
       </div>
     </div>
   );

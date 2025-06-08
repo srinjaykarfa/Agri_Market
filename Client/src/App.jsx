@@ -17,6 +17,7 @@ import AdminDashboard from "./Pages/AdminDashboard";
 import AdminProducts from "./Pages/AdminProducts";
 import AdminUsers from "./Pages/AdminUsers";
 import AdminAnalytics from "./Pages/AdminAnalytics";
+import Forgot from "./Pages/forgot";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -121,6 +122,10 @@ function App() {
               <Route
                 path="/signup"
                 element={<Signup className="animate-fade-in" />}
+              />
+              <Route
+              path="/forgot-password"
+              element={<Forgot className="animate-fade-in" />}
               />
               <Route
                 path="/soilmonitoringsystem"
