@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ProductCard from '../Components/productcard.jsx';
+import HeroSlider from '../Components/HeroSlider.jsx';
 import guava from '../assets/guava.webp';
 import sugarcane from '../assets/sugarcane.webp';
 import carrot from '../assets/carrot.webp';
@@ -59,7 +60,6 @@ const Home = ({ onAddToCart, filters, isBlurred }) => {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Trigger animation when component mounts or route changes
     setAnimate(false);
     setTimeout(() => setAnimate(true), 100);
 
@@ -106,6 +106,9 @@ const Home = ({ onAddToCart, filters, isBlurred }) => {
           isBlurred ? 'blur-sm pointer-events-none select-none' : ''
         }`}
       >
+        {/* ------- SLIDER ------- */}
+        <HeroSlider />
+
         {/* Hero */}
         <div className={`text-center mb-6 sm:mb-10 transition-all duration-500 transform ${
           animate ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
@@ -149,9 +152,6 @@ const Home = ({ onAddToCart, filters, isBlurred }) => {
             </div>
           )}
         </div>
-
-        {/* CTA */}
-        
       </div>
     </div>
   );
