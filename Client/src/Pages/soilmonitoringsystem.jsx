@@ -1,24 +1,15 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Droplet, 
-  Thermometer, 
-  Sun, 
-  Leaf, 
-  Plus, 
-  Edit2,
-  ChevronRight,
-  Info,
-  AlertCircle
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Plus, Edit2, Trash2, Leaf } from 'lucide-react';
 
 const SoilMonitoringSystem = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const address = location.state?.address;
-  const [soilData, setSoilData] = useState({
+  const [address, setAddress] = useState(location.state?.address || null);
+
+  // Dummy soil data and crops
+  const soilData = {
     moisture: 65,
     temperature: 28,
     ph: 6.8,
@@ -27,227 +18,113 @@ const SoilMonitoringSystem = () => {
       phosphorus: 'High',
       potassium: 'Low'
     }
-  });
+  };
 
-  const [recommendedCrops, setRecommendedCrops] = useState([
-    { name: 'Rice', suitability: 'High', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449' },
-    { name: 'Wheat', suitability: 'Medium', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449' },
-    { name: 'Maize', suitability: 'High', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449' }
-  ]);
+  const recommendedCrops = [
+    { name: 'Rice', suitability: 'High', image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?auto=format&fit=crop&w=400&q=80' },
+    { name: 'Wheat', suitability: 'Medium', image: 'https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80' },
+    { name: 'Maize', suitability: 'High', image: 'https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=400&q=80' }
+  ];
 
-  const getSuitabilityColor = (suitability) => {
-    switch (suitability.toLowerCase()) {
-      case 'high': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'low': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
+  const handleEdit = () => {
+    navigate('/add-address', { state: { address } });
+  };
+
+  const handleDelete = () => {
+    setAddress(null);
+  };
+
+  const handleGetRecommendation = () => {
+    navigate('/recommendations', {
+      state: { address, soilData, recommendedCrops }
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-8 px-4">
-      <motion.div 
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-lime-50 to-green-100 py-10 px-4">
+      <motion.div
         className="max-w-4xl mx-auto"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={{ opacity: 0, y: 32, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, type: "spring" }}
       >
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-green-800">Soil Monitoring System</h1>
-          {!address ? (
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/add-address')}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Plus size={20} />
-              <span>Add Address</span>
-            </motion.button>
-          ) : (
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/add-address')}
-              className="flex items-center gap-2 bg-white hover:bg-gray-50 text-green-600 px-4 py-2 rounded-lg border border-green-200 transition-colors"
-            >
-              <Edit2 size={20} />
-              <span>Edit Address</span>
-            </motion.button>
-          )}
-        </div>
-
-        {address ? (
-          <motion.div 
-            className="space-y-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
+        <div className="flex items-center justify-between mb-10">
+          <motion.h1
+            className="text-4xl font-extrabold text-green-800 drop-shadow-xl tracking-tight"
+            initial={{ scale: 0.95, opacity: 0.6 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
           >
-            {/* Address Card */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                </div>
-                <h2 className="text-xl font-semibold text-gray-800">Farm Location</h2>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-gray-600 mb-1">Full Name</p>
-                  <p className="font-medium">{address.fullName}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 mb-1">Phone Number</p>
-                  <p className="font-medium">{address.phone}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-gray-600 mb-1">Address</p>
-                  <p className="font-medium">{address.addressLine1}</p>
-                  {address.addressLine2 && (
-                    <p className="font-medium">{address.addressLine2}</p>
-                  )}
-                </div>
-                <div>
-                  <p className="text-gray-600 mb-1">City</p>
-                  <p className="font-medium">{address.city}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 mb-1">State</p>
-                  <p className="font-medium">{address.state}</p>
-                </div>
-                <div>
-                  <p className="text-gray-600 mb-1">PIN Code</p>
-                  <p className="font-medium">{address.pincode}</p>
-                </div>
-              </div>
+            Soil Monitoring System
+          </motion.h1>
+          <motion.button
+            whileHover={{ scale: 1.08, boxShadow: "0 4px 16px rgba(34,197,94,0.12)" }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/add-address')}
+            className="flex items-center gap-2 bg-gradient-to-tr from-green-500 via-green-600 to-lime-500 hover:from-green-600 hover:to-green-700 text-white px-5 py-3 rounded-xl transition-all font-semibold shadow-lg"
+          >
+            <Plus size={22} />
+            <span>Add Address</span>
+          </motion.button>
+        </div>
+        {/* Styled Farm Location Card */}
+        <AnimatePresence>
+        {address && (
+          <motion.div
+            className="bg-gradient-to-br from-green-50 via-white to-lime-50 rounded-2xl shadow-xl p-6 mb-7 border-2 border-green-200/80 max-w-lg mx-auto relative overflow-hidden"
+            initial={{ opacity: 0, y: 15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.97 }}
+            transition={{ duration: 0.45 }}
+            layout
+          >
+            {/* Decorative badge or icon */}
+            <div className="absolute -top-3 -left-3 bg-green-600 rounded-full p-2 shadow-lg">
+              <MapPin className="w-6 h-6 text-white drop-shadow-sm" />
             </div>
-
-            {/* Soil Parameters */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Leaf className="w-6 h-6 text-green-600" />
-                </div>
-                <h2 className="text-xl font-semibold text-gray-800">Soil Parameters</h2>
+            <div className="pl-10">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg font-bold text-green-700 tracking-wide">Farm Location</span>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Droplet className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-600">Moisture</span>
-                  </div>
-                  <p className="text-2xl font-bold text-green-700">{soilData.moisture}%</p>
-                </div>
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Thermometer className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-600">Temperature</span>
-                  </div>
-                  <p className="text-2xl font-bold text-green-700">{soilData.temperature}°C</p>
-                </div>
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sun className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-600">pH Level</span>
-                  </div>
-                  <p className="text-2xl font-bold text-green-700">{soilData.ph}</p>
-                </div>
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="w-5 h-5 text-green-600" />
-                    <span className="text-gray-600">Nutrients</span>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm">N: <span className="font-medium">{soilData.nutrients.nitrogen}</span></p>
-                    <p className="text-sm">P: <span className="font-medium">{soilData.nutrients.phosphorus}</span></p>
-                    <p className="text-sm">K: <span className="font-medium">{soilData.nutrients.potassium}</span></p>
-                  </div>
-                </div>
+              <div className="text-sm text-gray-700 mb-2 font-medium">
+                {address.addressLine1}
+                {address.addressLine2 && <>, {address.addressLine2}</>}
               </div>
-            </div>
-
-            {/* Recommended Crops */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Leaf className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h2 className="text-xl font-semibold text-gray-800">Recommended Crops</h2>
-                </div>
-                <button className="text-green-600 hover:text-green-700 flex items-center gap-1">
-                  <span className="text-sm">View All</span>
-                  <ChevronRight size={16} />
+              <div className="flex flex-wrap gap-x-6 gap-y-1 mb-4 text-xs">
+                <span className="bg-green-100 px-2 py-1 rounded font-medium text-green-700">
+                  City: <span className="font-bold">{address.city}</span>
+                </span>
+                <span className="bg-green-100 px-2 py-1 rounded font-medium text-green-700">
+                  State: <span className="font-bold">{address.state}</span>
+                </span>
+                <span className="bg-green-100 px-2 py-1 rounded font-medium text-green-700">
+                  PIN: <span className="font-bold">{address.pincode}</span>
+                </span>
+              </div>
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center gap-1 text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg font-semibold shadow transition"
+                >
+                  <span className="bg-yellow-300/70 rounded-full p-1 mr-1"><Edit2 size={13} /></span> Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex items-center gap-1 text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1.5 rounded-lg font-semibold shadow transition"
+                >
+                  <span className="bg-red-300/70 rounded-full p-1 mr-1"><Trash2 size={13} /></span> Delete
+                </button>
+                <button
+                  onClick={handleGetRecommendation}
+                  className="flex items-center gap-1 text-xs bg-gradient-to-tr from-green-500 to-lime-500 hover:from-green-600 hover:to-green-600 text-white px-3 py-1.5 rounded-lg font-semibold shadow-lg transition"
+                >
+                  <span className="bg-white/20 rounded-full p-1 mr-1"><Leaf size={13} /></span> Get Recommended Crops
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {recommendedCrops.map((crop, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.02 }}
-                    className="bg-green-50 rounded-lg overflow-hidden"
-                  >
-                    <div className="h-32 bg-gray-200">
-                      <img 
-                        src={crop.image} 
-                        alt={crop.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-gray-800 mb-1">{crop.name}</h3>
-                      <p className="text-sm">
-                        Suitability: <span className={`font-medium ${getSuitabilityColor(crop.suitability)}`}>
-                          {crop.suitability}
-                        </span>
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-              >
-                Get Detailed Analysis
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex-1 bg-white hover:bg-gray-50 text-green-600 py-3 px-4 rounded-lg border border-green-200 font-medium transition-colors"
-              >
-                Download Report
-              </motion.button>
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div 
-            className="bg-white rounded-xl shadow-sm p-8 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <AlertCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">No Address Added</h2>
-            <p className="text-gray-600 mb-6">Please add your farm location to get soil monitoring data and crop recommendations.</p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate('/add-address')}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-              Add Farm Location
-            </motion.button>
           </motion.div>
         )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );

@@ -18,6 +18,7 @@ import AdminProducts from "./Pages/AdminProducts";
 import AdminUsers from "./Pages/AdminUsers";
 import AdminAnalytics from "./Pages/AdminAnalytics";
 import Forgot from "./Pages/forgot";
+import Recommendations from "./Pages/recommendations";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -131,6 +132,7 @@ function App() {
                 path="/soilmonitoringsystem"
                 element={<SoilMonitoringSystem className="animate-fade-in" />}
               />
+              <Route path="/recommendations" element={<Recommendations />} />
               <Route
                 path="/add-address"
                 element={<AddAddressPage className="animate-fade-in" />}

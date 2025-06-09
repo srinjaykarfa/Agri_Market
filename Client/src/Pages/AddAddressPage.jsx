@@ -1,75 +1,29 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Home, 
-  Building2, 
-  Phone, 
-  User, 
-  Mail,
-  ChevronLeft,
-  MapPinned,
-  Building,
-  CheckCircle,
-  Crosshair
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, ChevronLeft, CheckCircle, Crosshair } from 'lucide-react';
 
-const AddAddressPage = () => {
+const AddressInput = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
     state: '',
     pincode: '',
-    addressType: 'home'
   });
-
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^[0-9]{10}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number';
-    }
-
-    if (!formData.addressLine1.trim()) {
-      newErrors.addressLine1 = 'Address is required';
-    }
-
-    if (!formData.city.trim()) {
-      newErrors.city = 'City is required';
-    }
-
-    if (!formData.state.trim()) {
-      newErrors.state = 'State is required';
-    }
-
-    if (!formData.pincode.trim()) {
-      newErrors.pincode = 'PIN code is required';
-    } else if (!/^[0-9]{6}$/.test(formData.pincode)) {
-      newErrors.pincode = 'Please enter a valid 6-digit PIN code';
-    }
-
+    if (!formData.addressLine1.trim()) newErrors.addressLine1 = 'Address Line 1 is required';
+    if (!formData.city.trim()) newErrors.city = 'City is required';
+    if (!formData.state.trim()) newErrors.state = 'State is required';
+    if (!formData.pincode.trim()) newErrors.pincode = 'PIN code is required';
+    else if (!/^[0-9]{6}$/.test(formData.pincode)) newErrors.pincode = 'Please enter a valid 6-digit PIN code';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -80,7 +34,6 @@ const AddAddressPage = () => {
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -93,20 +46,20 @@ const AddAddressPage = () => {
     e.preventDefault();
     if (validateForm()) {
       setIsSubmitting(true);
-      // Simulate API call
       setTimeout(() => {
         setIsSubmitting(false);
-        navigate('/soilmonitoringsystem', { state: { address: formData } });
-      }, 1500);
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          // Directly go to soil monitoring page with address
+          navigate('/soilmonitoringsystem', { state: { address: formData } });
+        }, 1100);
+      }, 1200);
     }
   };
 
   const getCurrentLocation = () => {
     setIsLoadingLocation(true);
-    if (errors.addressLine1) {
-      setErrors(prev => ({ ...prev, addressLine1: '' }));
-    }
-
     if (!navigator.geolocation) {
       setErrors(prev => ({ 
         ...prev, 
@@ -115,7 +68,6 @@ const AddAddressPage = () => {
       setIsLoadingLocation(false);
       return;
     }
-
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
@@ -124,7 +76,6 @@ const AddAddressPage = () => {
             `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_OPENCAGE_API_KEY`
           );
           const data = await response.json();
-          
           if (data.results && data.results[0]) {
             const result = data.results[0].components;
             setFormData(prev => ({
@@ -165,31 +116,36 @@ const AddAddressPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-8">
       <motion.div 
-        className="max-w-2xl mx-auto px-4"
-        initial={{ opacity: 0, y: 20 }}
+        className="max-w-xl mx-auto px-4"
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.5 }}
       >
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors mb-6"
+          className="flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors mb-8"
         >
           <ChevronLeft size={20} />
           <span>Back</span>
         </button>
-
-        <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
-          <div className="flex items-center justify-between mb-8">
+        <motion.div 
+          className="bg-white rounded-2xl shadow-lg p-8"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className="flex items-center gap-3 mb-6 justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
-                <MapPinned className="w-6 h-6 text-green-600" />
+                <MapPin className="w-6 h-6 text-green-600" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Add New Address</h1>
+              <h1 className="text-2xl font-bold text-gray-800">Enter Address</h1>
             </div>
-            <button
+            <motion.button
               type="button"
               onClick={getCurrentLocation}
               disabled={isLoadingLocation}
+              whileHover={{ scale: isLoadingLocation ? 1 : 1.05 }}
               className="flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
             >
               {isLoadingLocation ? (
@@ -197,247 +153,148 @@ const AddAddressPage = () => {
               ) : (
                 <Crosshair size={18} />
               )}
-              <span className="text-sm">Use My Location</span>
-            </button>
+              <span className="text-sm">{isLoadingLocation ? "Detecting..." : "Use My Location"}</span>
+            </motion.button>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <User size={18} />
-                Personal Information
-              </h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      errors.fullName ? 'border-red-300' : 'border-gray-200'
-                    } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                    placeholder="Enter your full name"
-                  />
-                  {errors.fullName && (
-                    <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
-                        errors.email ? 'border-red-300' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className={`w-full pl-10 pr-4 py-3 rounded-lg border ${
-                        errors.phone ? 'border-red-300' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                      placeholder="Enter your phone number"
-                      maxLength="10"
-                    />
-                  </div>
-                  {errors.phone && (
-                    <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
-                  )}
-                </div>
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address Line 1
+              </label>
+              <input
+                type="text"
+                name="addressLine1"
+                value={formData.addressLine1}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.addressLine1 ? 'border-red-300' : 'border-gray-200'
+                } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all`}
+                placeholder="House/Flat number, Street, Locality"
+              />
+              {errors.addressLine1 && (
+                <p className="mt-1 text-sm text-red-500">{errors.addressLine1}</p>
+              )}
             </div>
-
-            {/* Address Details */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <MapPin size={18} />
-                Address Details
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address Line 1
-                  </label>
-                  <input
-                    type="text"
-                    name="addressLine1"
-                    value={formData.addressLine1}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 rounded-lg border ${
-                      errors.addressLine1 ? 'border-red-300' : 'border-gray-200'
-                    } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                    placeholder="House/Flat number, Street, Locality"
-                  />
-                  {errors.addressLine1 && (
-                    <p className="mt-1 text-sm text-red-500">{errors.addressLine1}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address Line 2 (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    name="addressLine2"
-                    value={formData.addressLine2}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    placeholder="Landmark, Area (optional)"
-                  />
-                </div>
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      City
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={formData.city}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.city ? 'border-red-300' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                      placeholder="Enter city"
-                    />
-                    {errors.city && (
-                      <p className="mt-1 text-sm text-red-500">{errors.city}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      State
-                    </label>
-                    <select
-                      name="state"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.state ? 'border-red-300' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                    >
-                      <option value="">Select State</option>
-                      {indianStates.map(state => (
-                        <option key={state} value={state}>{state}</option>
-                      ))}
-                    </select>
-                    {errors.state && (
-                      <p className="mt-1 text-sm text-red-500">{errors.state}</p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      PIN Code
-                    </label>
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={formData.pincode}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-3 rounded-lg border ${
-                        errors.pincode ? 'border-red-300' : 'border-gray-200'
-                      } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent`}
-                      placeholder="6-digit PIN code"
-                      maxLength="6"
-                    />
-                    {errors.pincode && (
-                      <p className="mt-1 text-sm text-red-500">{errors.pincode}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address Line 2 (Optional)
+              </label>
+              <input
+                type="text"
+                name="addressLine2"
+                value={formData.addressLine2}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                placeholder="Landmark, Area (optional)"
+              />
             </div>
-
-            {/* Address Type */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-700 flex items-center gap-2">
-                <Building size={18} />
-                Address Type
-              </h2>
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, addressType: 'home' }))}
-                  className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${
-                    formData.addressType === 'home'
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-green-200'
-                  }`}
+            <div className="grid md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 rounded-lg border ${
+                    errors.city ? 'border-red-300' : 'border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all`}
+                  placeholder="Enter city"
+                />
+                {errors.city && (
+                  <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State
+                </label>
+                <select
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 rounded-lg border ${
+                    errors.state ? 'border-red-300' : 'border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all`}
                 >
-                  <Home className={formData.addressType === 'home' ? 'text-green-600' : 'text-gray-400'} size={20} />
-                  <span className={formData.addressType === 'home' ? 'text-green-700' : 'text-gray-600'}>
-                    Home
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, addressType: 'office' }))}
-                  className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-lg border-2 transition-all ${
-                    formData.addressType === 'office'
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 hover:border-green-200'
-                  }`}
-                >
-                  <Building2 className={formData.addressType === 'office' ? 'text-green-600' : 'text-gray-400'} size={20} />
-                  <span className={formData.addressType === 'office' ? 'text-green-700' : 'text-gray-600'}>
-                    Office
-                  </span>
-                </button>
+                  <option value="">Select State</option>
+                  {indianStates.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+                {errors.state && (
+                  <p className="mt-1 text-sm text-red-500">{errors.state}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PIN Code
+                </label>
+                <input
+                  type="text"
+                  name="pincode"
+                  value={formData.pincode}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 rounded-lg border ${
+                    errors.pincode ? 'border-red-300' : 'border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all`}
+                  placeholder="6-digit PIN code"
+                  maxLength="6"
+                />
+                {errors.pincode && (
+                  <p className="mt-1 text-sm text-red-500">{errors.pincode}</p>
+                )}
               </div>
             </div>
-
-            <button
+            <motion.button
               type="submit"
-              disabled={isSubmitting}
-              className={`w-full py-4 px-4 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all ${
-                isSubmitting
+              disabled={isSubmitting || showSuccess}
+              whileHover={{ scale: isSubmitting || showSuccess ? 1 : 1.03 }}
+              whileTap={{ scale: isSubmitting || showSuccess ? 1 : 0.98 }}
+              className={`w-full py-4 px-4 rounded-lg text-white font-medium flex items-center justify-center gap-2 transition-all duration-200 ${
+                isSubmitting || showSuccess
                   ? 'bg-green-400 cursor-not-allowed'
                   : 'bg-green-600 hover:bg-green-700 hover:shadow-lg'
               }`}
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                  Saving Address...
-                </>
-              ) : (
-                <>
-                  <CheckCircle size={20} />
-                  Save Address
-                </>
-              )}
-            </button>
+              <AnimatePresence mode="wait" initial={false}>
+                {showSuccess ? (
+                  <motion.span
+                    key="done"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckCircle size={22} className="animate-bounceIn text-white" />
+                    Address Saved!
+                  </motion.span>
+                ) : isSubmitting ? (
+                  <motion.span
+                    key="saving"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2"
+                  >
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+                    Saving...
+                  </motion.span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <CheckCircle size={20} />
+                    Save Address
+                  </span>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </form>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
 };
 
-export default AddAddressPage;
+export default AddressInput;
