@@ -19,6 +19,8 @@ import AdminUsers from "./Pages/AdminUsers";
 import AdminAnalytics from "./Pages/AdminAnalytics";
 import Forgot from "./Pages/forgot";
 import Recommendations from "./Pages/recommendations";
+import CategoryPage from "./Pages/CategoryPage"; // <-- Add this import
+import MyProfile from "./Pages/MyProfile"; // <-- Add this import
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -28,7 +30,7 @@ function App() {
     priceRange: [0, 500],
     sort: "",
   });
-  const [isBlurred, setIsBlurred] = useState(false); // renamed from isDropdownOpen
+  const [isBlurred, setIsBlurred] = useState(false);
 
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
@@ -125,8 +127,8 @@ function App() {
                 element={<Signup className="animate-fade-in" />}
               />
               <Route
-              path="/forgot"
-              element={<Forgot className="animate-fade-in" />}
+                path="/forgot"
+                element={<Forgot className="animate-fade-in" />}
               />
               <Route
                 path="/soilmonitoringsystem"
@@ -171,6 +173,14 @@ function App() {
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/profile" element={<MyProfile />} />
+              {/* Category Page Route */}
+              <Route
+                path="/category/:categoryName"
+                element={
+                  <CategoryPage onAddToCart={handleAddToCart} />
+                }
+              />
             </Routes>
           </div>
         </main>
