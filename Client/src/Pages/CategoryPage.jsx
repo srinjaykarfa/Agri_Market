@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import Navbar from "../Components/navbar";
-import Footer from "../Components/footer";
 import ProductCard from "../Components/productcard.jsx";
 import guava from "../assets/guava.webp";
 import sugarcane from "../assets/sugarcane.webp";
@@ -101,10 +99,9 @@ const CategoryPage = ({ onAddToCart }) => {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f6fbea]">
-      
       <main className="flex flex-col md:flex-row gap-8 max-w-7xl mx-auto px-4 py-8 w-full">
         {/* Sidebar */}
-        <aside className="w-full md:w-60 mb-8 md:mb-0 md:mr-8 bg-white rounded-xl shadow p-6 h-fit">
+        <aside className="w-full md:w-56 mb-8 md:mb-0 md:mr-8 bg-white rounded-2xl shadow-lg p-5 h-fit animate-fadeIn">
           <h3 className="text-xl font-bold mb-4 text-green-700">{categoryName} Filters</h3>
           <div className="mb-6">
             <p className="font-medium mb-2 text-gray-700">Products</p>
@@ -115,9 +112,9 @@ const CategoryPage = ({ onAddToCart }) => {
                   id={name}
                   checked={selectedProducts.includes(name)}
                   onChange={() => handleProductCheck(name)}
-                  className="mr-2"
+                  className="mr-2 accent-green-600 cursor-pointer"
                 />
-                <label htmlFor={name} className="text-gray-600">{name}</label>
+                <label htmlFor={name} className="text-gray-600 cursor-pointer select-none">{name}</label>
               </div>
             ))}
           </div>
@@ -130,7 +127,7 @@ const CategoryPage = ({ onAddToCart }) => {
                 max={priceRange[1]}
                 value={priceRange[0]}
                 onChange={(e) => handlePriceChange(e, 0)}
-                className="w-16 border rounded px-2 py-1 text-sm"
+                className="w-16 border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-300 transition"
               />
               <span>-</span>
               <input
@@ -139,7 +136,7 @@ const CategoryPage = ({ onAddToCart }) => {
                 max={maxPrice}
                 value={priceRange[1]}
                 onChange={(e) => handlePriceChange(e, 1)}
-                className="w-16 border rounded px-2 py-1 text-sm"
+                className="w-16 border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-300 transition"
               />
             </div>
             <div className="text-xs text-gray-400 mt-1">
@@ -151,7 +148,7 @@ const CategoryPage = ({ onAddToCart }) => {
             <select
               value={sortBy}
               onChange={handleSortChange}
-              className="w-full border rounded px-2 py-1 text-sm"
+              className="w-full border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-green-300 transition"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -160,14 +157,18 @@ const CategoryPage = ({ onAddToCart }) => {
           </div>
         </aside>
         {/* Product Grid */}
-        <section className="flex-1">
-          <h2 className="text-2xl font-bold text-green-700 mb-6">
+        <section className="flex-1 animate-fadeIn">
+          <h2 className="text-2xl font-extrabold text-green-700 mb-6 drop-shadow-sm tracking-tight">
             {categoryName} Products
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-7">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product, index) => (
-                <div key={index} className="w-full flex">
+                <div
+                  key={index}
+                  className="w-full flex animate-fadeInUp"
+                  style={{ animationDelay: `${index * 70 + 80}ms` }}
+                >
                   <ProductCard
                     {...product}
                     onAddToCart={onAddToCart}
@@ -175,14 +176,25 @@ const CategoryPage = ({ onAddToCart }) => {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-10 text-gray-600 text-lg">
+              <div className="col-span-full text-center py-10 text-gray-600 text-lg animate-fadeIn">
                 No products found in this category.
               </div>
             )}
           </div>
         </section>
       </main>
-      
+      <style>{`
+        @keyframes fadeIn {
+          0% { opacity: 0; transform: translateY(24px);}
+          100% { opacity: 1; transform: translateY(0);}
+        }
+        .animate-fadeIn { animation: fadeIn 0.6s cubic-bezier(.4,1.3,.6,1) both; }
+        @keyframes fadeInUp {
+          0% { opacity: 0; transform: translateY(24px);}
+          100% { opacity: 1; transform: translateY(0);}
+        }
+        .animate-fadeInUp { animation: fadeInUp 0.5s cubic-bezier(.4,1.3,.6,1) both; }
+      `}</style>
     </div>
   );
 };

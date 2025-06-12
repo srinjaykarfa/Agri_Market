@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Info } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 const cardVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  hover: { scale: 1.04, boxShadow: "0 4px 32px 0 rgba(60,120,40,0.14)" }
+  hover: { scale: 1.05, boxShadow: "0 8px 32px 0 rgba(60,120,40,0.14)" }
 };
 
 const ProductCard = ({ image, title, description, price, onAddToCart }) => {
@@ -14,22 +14,24 @@ const ProductCard = ({ image, title, description, price, onAddToCart }) => {
 
   return (
     <motion.div
-      className="group relative bg-white rounded-2xl border border-gray-100 shadow hover:shadow-lg transition-all flex flex-col w-full max-w-[220px] mx-auto overflow-hidden"
+      className="group relative bg-white rounded-2xl border border-gray-100 shadow-lg hover:shadow-2xl transition-all flex flex-col w-full max-w-[230px] mx-auto overflow-hidden"
       variants={cardVariants}
       initial="initial"
       animate="animate"
       whileHover="hover"
       onMouseLeave={() => setShowDetails(false)}
-      style={{ minHeight: 250, cursor: 'pointer' }}
+      style={{ minHeight: 260, cursor: 'pointer' }}
     >
       <div className="relative w-full h-36 bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center overflow-hidden">
         <img
           src={image}
           alt={title}
-          className="object-cover h-full w-full group-hover:scale-105 transition-transform duration-300"
+          className="object-cover h-full w-full group-hover:scale-110 transition-transform duration-400"
         />
         {price < 100 && (
-          <span className="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-0.5 rounded font-semibold shadow">Deal</span>
+          <span className="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-0.5 rounded font-semibold shadow animate-bounce">
+            Deal
+          </span>
         )}
       </div>
       <div className="flex-1 flex flex-col justify-between p-4">
@@ -46,28 +48,28 @@ const ProductCard = ({ image, title, description, price, onAddToCart }) => {
           </button>
           <motion.button
             onClick={() => onAddToCart && onAddToCart({ image, title, description, price })}
-            whileTap={{ scale: 1.1 }}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border border-green-600 text-white bg-green-600 hover:bg-green-700 transition"
+            whileTap={{ scale: 1.13 }}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold border border-green-600 text-white bg-green-600 hover:bg-green-700 shadow transition"
           >
             <ShoppingCart size={14} /> Add
           </motion.button>
         </div>
       </div>
-      {showDetails && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          className="absolute inset-0 bg-white/95 p-5 flex flex-col justify-center z-20 rounded-2xl shadow-2xl"
-        >
-          <h3 className="text-xl font-bold text-green-700 mb-2">{title}</h3>
-          <p className="text-gray-700 text-sm mb-4">{description}</p>
-          <button
-            onClick={() => setShowDetails(false)}
-            className="self-end text-sm text-blue-600 hover:underline font-medium"
-          >Close</button>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {showDetails && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.22 }}
+            className="absolute inset-0 bg-white/95 p-6 flex flex-col justify-center z-20 rounded-2xl shadow-2xl"
+          >
+            <h3 className="text-xl font-bold text-green-700 mb-2">{title}</h3>
+            <p className="text-gray-700 text-sm mb-4">{description}</p>
+            
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };

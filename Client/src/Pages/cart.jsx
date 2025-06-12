@@ -24,17 +24,20 @@ const Cart = ({
 
   return (
     <div
-      className={`relative max-w-3xl mx-auto px-2 py-8 min-h-[70vh] bg-[#f4faef] ${className}`}
-      style={{ fontFamily: "Inter, sans-serif" }}
+      className={`max-w-5xl mx-auto px-2 py-10 min-h-[70vh] ${className}`}
+      style={{
+        fontFamily: "Inter, sans-serif",
+        background: "#f4faef"
+      }}
     >
-      <h1 className="text-3xl md:text-4xl font-extrabold text-[#118a3b] mb-7 text-center tracking-tight flex items-center justify-center gap-2">
+      <h1 className="text-3xl md:text-4xl font-extrabold text-[#118a3b] mb-8 text-center tracking-tight flex items-center justify-center gap-2">
         <ShoppingBag style={{ color: green, width: 30, height: 30 }} />
         Your Cart
       </h1>
-      
-      <div className="flex flex-col gap-7 items-center">
-        {/* Cart Items */}
-        <div className="w-full flex flex-col gap-5">
+
+      <div className="flex flex-col md:flex-row md:items-start md:justify-center gap-8 w-full">
+        {/* Product List - compact */}
+        <div className="flex-1 w-full md:max-w-md flex flex-col gap-5">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 rounded-2xl bg-white/80 shadow-md border border-green-100">
               <ShoppingBag className="w-10 h-10 mb-3 text-green-300" />
@@ -57,7 +60,7 @@ const Cart = ({
             cartItems.map((item, idx) => (
               <div
                 key={item.id || item.title}
-                className="flex items-center gap-5 bg-white rounded-2xl shadow-xl border border-[#e0f5e7] px-5 py-4"
+                className="flex items-center gap-4 bg-white rounded-2xl shadow-xl border border-[#e0f5e7] px-4 py-3"
                 style={{
                   boxShadow:
                     "0 2px 12px 0 rgba(19,185,79,0.07), 0 1.5px 5px 0 rgba(19,185,79,0.03)"
@@ -66,44 +69,46 @@ const Cart = ({
                 <img
                   src={item.image || "/default-product.png"}
                   alt={item.title}
-                  className="w-16 h-16 object-cover rounded-xl border-2 border-[#eafff1] shadow"
+                  className="w-14 h-14 object-cover rounded-xl border-2 border-[#eafff1] shadow"
                 />
-                <div className="flex-1 flex flex-col gap-2 min-w-0">
-                  <span className="font-semibold text-base text-[#13b94f] truncate">{item.title}</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center gap-1 bg-[#eafff1] px-2.5 py-1.5 rounded-lg border border-[#cdfadb]">
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-base text-[#13b94f] truncate">{item.title}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center bg-[#eafff1] px-2 py-1 rounded-lg border border-[#cdfadb]">
+                        <button
+                          onClick={() => updateQuantity(idx, item.quantity - 1)}
+                          disabled={item.quantity === 1}
+                          className="p-1 rounded hover:bg-[#e0f5e7] disabled:opacity-60 transition"
+                          style={{ color: green, fontSize: "1rem" }}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="mx-2 text-sm">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(idx, item.quantity + 1)}
+                          className="p-1 rounded hover:bg-[#e0f5e7] transition"
+                          style={{ color: green, fontSize: "1rem" }}
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
                       <button
-                        onClick={() => updateQuantity(idx, item.quantity - 1)}
-                        disabled={item.quantity === 1}
-                        className="p-1 rounded hover:bg-[#e0f5e7] disabled:opacity-60 transition"
-                        style={{ color: green, fontSize: "1rem" }}
+                        onClick={() => removeItem(idx)}
+                        className="ml-1 p-1.5 rounded-full"
+                        style={{
+                          background: "#ffeaea",
+                          color: dangerText,
+                          border: "none"
+                        }}
+                        aria-label="Remove item"
                       >
-                        <Minus size={16} />
-                      </button>
-                      <span className="mx-2 text-sm">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(idx, item.quantity + 1)}
-                        className="p-1 rounded hover:bg-[#e0f5e7] transition"
-                        style={{ color: green, fontSize: "1rem" }}
-                      >
-                        <Plus size={16} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
-                    <button
-                      onClick={() => removeItem(idx)}
-                      className="ml-1 p-1.5 rounded-full"
-                      style={{
-                        background: "#ffeaea",
-                        color: dangerText,
-                        border: "none"
-                      }}
-                      aria-label="Remove item"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </div>
-                <div className="text-[#13b94f] font-semibold text-base min-w-[54px] text-right">
+                <div className="text-[#13b94f] font-semibold text-base min-w-[48px] text-right">
                   ₹{item.price}
                 </div>
               </div>
@@ -111,10 +116,10 @@ const Cart = ({
           )}
         </div>
 
-        {/* Cart Summary at the bottom */}
+        {/* Cart Summary */}
         {cartItems.length > 0 && (
           <div
-            className="w-full max-w-[380px] bg-white rounded-2xl shadow-xl border border-[#e0f5e7] p-6 flex flex-col gap-2 self-center"
+            className="w-full md:w-[370px] bg-white rounded-2xl shadow-xl border border-[#e0f5e7] p-7 flex flex-col gap-2 self-start"
             style={{
               boxShadow:
                 "0 4px 24px 0 rgba(19,185,79,0.09), 0 1.5px 5px 0 rgba(19,185,79,0.03)"

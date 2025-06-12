@@ -67,6 +67,9 @@ const formVariants = {
 const inputClass =
   "w-full px-4 py-2 rounded-lg border border-green-200 focus:ring-2 focus:ring-green-400 bg-green-50 transition text-gray-800 placeholder-gray-400";
 
+const gstPercent = 18;
+const deliveryCharge = 40;
+
 const Checkout = ({
   cartItems = [],
   clearCart = () => {},
@@ -83,10 +86,12 @@ const Checkout = ({
   const [deliveryEstimate, setDeliveryEstimate] = useState("");
   const navigate = useNavigate();
 
-  const total = cartItems.reduce(
+  const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+  const gst = parseFloat(((subtotal * gstPercent) / 100).toFixed(2));
+  const total = subtotal + gst + (cartItems.length > 0 ? deliveryCharge : 0);
 
   useEffect(() => {
     const min = 3, max = 5;
@@ -284,7 +289,19 @@ const Checkout = ({
               </li>
             ))}
           </ul>
-          <div className="flex justify-between text-xl font-bold py-2 border-t border-green-100">
+          <div className="flex justify-between text-sm py-1">
+            <span>Subtotal</span>
+            <span>₹{subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span>GST ({gstPercent}%)</span>
+            <span>₹{gst.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-sm py-1">
+            <span>Delivery Charge</span>
+            <span>₹{cartItems.length > 0 ? deliveryCharge.toFixed(2) : "0.00"}</span>
+          </div>
+          <div className="flex justify-between text-xl font-bold py-2 border-t border-green-100 mt-2">
             <span>Total</span>
             <span className="text-green-700">₹{total.toFixed(2)}</span>
           </div>

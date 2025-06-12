@@ -1,10 +1,9 @@
 import React from 'react';
 import Slider from 'react-slick';
 
-// Put your banner images in the public folder or import them
 const banners = [
   {
-    img: '/banner1.webp', // You can replace with your own images
+    img: '/banner1.webp',
     alt: 'Banner 1',
   },
   {
@@ -21,23 +20,27 @@ const HeroSlider = () => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 800,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3500,
-    arrows: true,
+    arrows: false,
+    fade: true,
+    pauseOnHover: true
   };
 
   return (
-    <div className="mb-8">
+    <div className="mb-8 rounded-xl overflow-hidden shadow-md">
       <Slider {...settings}>
         {banners.map((banner, idx) => (
           <div key={idx}>
             <img
               src={banner.img}
               alt={banner.alt}
-              className="w-full h-[240px] object-cover rounded-md"
+              className="w-full h-[230px] object-cover rounded-xl"
+              draggable={false}
+              style={{ userSelect: 'none' }}
             />
           </div>
         ))}
