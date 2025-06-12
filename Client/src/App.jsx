@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/navbar";
 import Sidebar from "./Components/sidebar";
 import Footer from "./Components/footer";
-
 import Home from "./Pages/home";
 import Login from "./Pages/login";
 import Signup from "./Pages/signup";
@@ -19,8 +18,8 @@ import AdminUsers from "./Pages/AdminUsers";
 import AdminAnalytics from "./Pages/AdminAnalytics";
 import Forgot from "./Pages/forgot";
 import Recommendations from "./Pages/recommendations";
-import CategoryPage from "./Pages/CategoryPage"; // <-- Add this import
-import MyProfile from "./Pages/MyProfile"; // <-- Add this import
+import CategoryPage from "./Pages/CategoryPage";
+import MyProfile from "./Pages/MyProfile";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -43,9 +42,7 @@ function App() {
     localStorage.setItem("cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const handleAddToCart = (product) => {
     setCartItems((prevItems) => {
@@ -80,9 +77,7 @@ function App() {
     setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
   };
 
-  const clearCart = () => {
-    setCartItems([]);
-  };
+  const clearCart = () => setCartItems([]);
 
   return (
     <Router>
@@ -174,7 +169,6 @@ function App() {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/profile" element={<MyProfile />} />
-              {/* Category Page Route */}
               <Route
                 path="/category/:categoryName"
                 element={

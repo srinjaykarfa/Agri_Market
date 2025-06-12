@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, ShoppingCart, Search, User, X, ChevronDown, LogOut } from "lucide-react";
+import { Menu, ShoppingCart, Search, User, X, ChevronDown, LogOut, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // Modern, agriculture-inspired logo (SVG)
 const AgricultureLogo = ({ size = 36 }) => (
@@ -96,6 +97,12 @@ const defaultFilters = {
   sort: "",
 };
 
+const LANGUAGES = [
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "hi", label: "हिन्दी", flag: "🇮🇳" },
+  { code: "bn", label: "বাংলা", flag: "🇧🇩" }
+];
+
 const Navbar = ({
   toggleSidebar,
   cartCount = 0,
@@ -107,10 +114,12 @@ const Navbar = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   const searchInputRef = useRef(null);
   const userMenuTimeout = useRef(null);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   // ---- Inject Animation CSS Once ----
   useEffect(() => {
@@ -158,6 +167,7 @@ const Navbar = ({
         setSearchOpen(false);
         setMobileMenuOpen(false);
         setUserMenuOpen(false);
+        setLangMenuOpen(false);
       }
     };
     document.addEventListener("keydown", handleEscapeKey);
@@ -225,7 +235,7 @@ const Navbar = ({
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search fresh produce, grains, etc..."
+                  placeholder={t("searchPlaceholder")}
                   className="w-full px-4 py-2 pr-10 rounded-xl border border-gray-200 shadow focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-lime-400 transition text-gray-800 bg-white/90 font-[Inter] placeholder:text-gray-400"
                   autoFocus={searchOpen}
                 />
@@ -249,14 +259,45 @@ const Navbar = ({
               onClick={handleHomeClick}
               className="text-white font-semibold text-lg hover:text-[#a8ff78] hover:scale-105 transition transform duration-150"
             >
-              Home
+              {t("home")}
             </a>
             <Link
               to="/soilmonitoringsystem"
               className="text-white font-semibold text-lg hover:text-[#a8ff78] hover:scale-105 transition transform duration-150"
             >
-              Soil Monitoring
+              {t("soilMonitoring")}
             </Link>
+          </div>
+          {/* --- Language Switcher --- */}
+          <div className="relative" style={{ cursor: "pointer" }}>
+            <button
+              className="p-2 rounded-lg hover:bg-white/10 active:bg-white/25 transition"
+              aria-label={t("changeLanguage")}
+              onClick={() => setLangMenuOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setLangMenuOpen(false), 120)}
+              type="button"
+            >
+              <Globe size={22} className="text-white" />
+            </button>
+            {langMenuOpen && (
+              <div className="absolute right-0 mt-2 w-36 bg-white rounded-xl dropdown-animate dropdown-shadow py-2 z-30 shadow-lg border border-gray-100">
+                {LANGUAGES.map((lang) => (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      setLangMenuOpen(false);
+                    }}
+                    className={`block w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-[#a8ff78]/40 hover:text-lime-800 transition-all duration-150 rounded ${
+                      i18n.resolvedLanguage === lang.code ? "font-bold" : ""
+                    }`}
+                  >
+                    <span className="mr-2">{lang.flag}</span>
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {/* --- Search (Mobile Only) --- */}
           <div className="md:hidden relative">
@@ -279,7 +320,7 @@ const Navbar = ({
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search products..."
+                      placeholder={t("searchMobilePlaceholder")}
                       className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-lime-400 font-[Inter]"
                       autoFocus
                     />
@@ -299,7 +340,7 @@ const Navbar = ({
           <Link
             to="/cart"
             className="relative p-2 rounded-lg hover:bg-white/10 active:bg-white/25 transition"
-            aria-label="Cart"
+            aria-label={t("cart")}
           >
             <ShoppingCart size={22} className="text-white drop-shadow" />
             {cartCount > 0 && (
@@ -337,21 +378,21 @@ const Navbar = ({
                   className="block w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-[#a8ff78]/40 hover:text-lime-800 transition-all duration-150 rounded"
                   onClick={() => setUserMenuOpen(false)}
                 >
-                  Login
+                  {t("login")}
                 </Link>
                 <Link
                   to="/signup"
                   className="block w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-[#a8ff78]/40 hover:text-lime-800 transition-all duration-150 rounded"
                   onClick={() => setUserMenuOpen(false)}
                 >
-                  Sign Up
+                  {t("signup")}
                 </Link>
                 <Link
                   to="/profile"
                   className="block w-full text-left px-4 py-2 text-base text-gray-700 hover:bg-[#a8ff78]/40 hover:text-lime-800 transition-all duration-150 rounded"
                   onClick={() => setUserMenuOpen(false)}
                 >
-                  My Profile
+                  {t("myProfile")}
                 </Link>
                 <button
                   className="flex items-center w-full px-4 py-2 text-base text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-150 rounded mt-1"
@@ -361,7 +402,7 @@ const Navbar = ({
                     onLogout && onLogout();
                   }}
                 >
-                  <LogOut size={18} className="mr-2" /> Logout
+                  <LogOut size={18} className="mr-2" /> {t("logout")}
                 </button>
               </div>
             )}
@@ -377,14 +418,14 @@ const Navbar = ({
               onClick={handleHomeClick}
               className="block py-2 text-lg text-gray-700 font-semibold hover:text-[#a8ff78] hover:bg-[#a8ff78]/10 rounded transition"
             >
-              Home
+              {t("home")}
             </a>
             <Link
               to="/soilmonitoringsystem"
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-lg text-gray-700 font-semibold hover:text-[#a8ff78] hover:bg-[#a8ff78]/10 rounded transition"
             >
-              Soil Monitoring
+              {t("soilMonitoring")}
             </Link>
           </div>
         </div>

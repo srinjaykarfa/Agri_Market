@@ -20,6 +20,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           {/* Sidebar */}
           <motion.div
             initial={{ x: '-100%' }}
+            
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
