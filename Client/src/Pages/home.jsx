@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import ProductCard from "../Components/ProductCard.jsx";
+import ProductCard from "../Components/Productcard.jsx";
 import HeroSlider from "../Components/HeroSlider.jsx";
 import CategoryBar from "../Components/CategoryBar.jsx";
 import guava from "../assets/guava.webp";

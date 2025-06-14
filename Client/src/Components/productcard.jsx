@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Info } from 'lucide-react';
-import {  AnimatePresence } from 'framer-motion';
+import {motion, AnimatePresence } from 'framer-motion';
 import PropTypes from 'prop-types';
 
 const cardVariants = {
